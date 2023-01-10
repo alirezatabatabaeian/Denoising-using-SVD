@@ -1,0 +1,60 @@
+%%  Plot SNR = Constant & r1 < r < r2
+figure(5);
+pause(2);
+snr_test = snr;
+filename = 'SNR Constant.gif';
+for i = 1 : min(L,K)-1
+    plot(n,MainData,'color','[0,0,1]'); %blue
+    hold on;
+    Hankel_NoisyData_test = Embed(NoisyData, L);
+    Hankel_DenoisedData_test = low_rank_approx(Hankel_NoisyData_test, i);
+    DeNoised_Data_test = De_Embed(Hankel_DenoisedData_test); 
+    plot(n,DeNoised_Data_test,'color','[1,0,0]'); %red
+    drawnow;
+    title('SNR = Constant & r = Varying','color','[0.9 0.5 0.7]');
+    legend(num2str(r),num2str(i),'FontSize',20,'Location','north');
+    legend('boxoff');
+    frame = getframe(5);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      if i == 1
+          imwrite(imind,cm,filename,'gif', 'Loopcount',inf);
+      else
+          imwrite(imind,cm,filename,'gif','WriteMode','append');
+      end
+    if r-2 <= i && i <= r+2
+        pause(2);
+    else
+        pause(0.02);
+    end
+    hold off;
+end
+%%  Plot r = Constant & SNR1 < SNR < SNR2
+figure(6);
+pause(2);
+r_test = 10;
+filename = 'r Constant.gif';
+for i = -20 : 5
+    plot(n,MainData,'color','[0,0,1]'); %blue
+    hold on;
+    snr_test = (10).^(i);
+    NoisyData_test = awgn(MainData,snr_test,'measured');   
+    Hankel_NoisyData_test = Embed(NoisyData_test, L);
+    Hankel_DenoisedData_test = low_rank_approx(Hankel_NoisyData_test, r_test);
+    DeNoised_Data_test = De_Embed(Hankel_DenoisedData_test); 
+    plot(n,DeNoised_Data_test,'color','[1,0,0]'); %red
+    drawnow;
+    title('r = Constant & SNR = Varying','color','[0.9 0.5 0.7]');
+    legend('Main Signal SNR : inf', num2str((10).^(i)), 'FontSize',20,'Location','north');
+    legend('boxoff');
+    frame = getframe(6);
+      im = frame2im(frame);
+      [imind,cm] = rgb2ind(im,256);
+      if i == -20
+          imwrite(imind,cm,filename,'gif', 'Loopcount',inf);
+      else
+          imwrite(imind,cm,filename,'gif','WriteMode','append');
+      end
+    pause(1);
+    hold off;
+end
